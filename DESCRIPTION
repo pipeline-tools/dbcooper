@@ -1,0 +1,17 @@
+Package: remotedb
+Title: Accessor functions for remote databases
+Version: 0.0.1
+Authors@R: 
+    person("Chris", "Cardillo", email="cfcardillo23@gmail.com", role = c("aut", "cre"))
+Description: Connects to a database and creates accessor functions for the tables
+License: MIT
+Encoding: UTF-8
+Depends:
+  dplyr
+Imports:
+  DBI,
+  RPostgreSQL,
+  purrr,
+  dbplyr,
+  R6
+RoxygenNote: 6.1.1
