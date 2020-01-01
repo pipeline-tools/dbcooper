@@ -1,8 +1,10 @@
 Package: remotedb
 Title: Accessor functions for remote databases
-Version: 0.0.1
-Authors@R: 
-    person("Chris", "Cardillo", email="cfcardillo23@gmail.com", role = c("aut", "cre"))
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Chris", "Cardillo", email="cfcardillo23@gmail.com", role = c("aut", "cre")), 
+    person("David", "Robinson", role = "ctb"), 
+    person("Ramnath", "Vaidyanathan", role = "ctb"))
 Description: Connects to a database and creates accessor functions for the tables
 License: MIT
 Encoding: UTF-8
