@@ -47,8 +47,17 @@ rmdb_tbl <- function(table_name){
 #' Query the database
 #' @param query query for database
 #' @importFrom dplyr tbl sql
+#' @importFrom yaml read_yaml
 #' @export
 rmdb_query <- function(query){
+  if(grepl("*.yml$", query)){
+    yaml <- yaml::read_yaml(query)
+    if("query" %in% names(yaml)){
+      query <- yaml[["query"]]
+    } else {
+      stop(paste0("No parameter 'query' found in file ", query))
+    }
+  }
   tryCatch(dplyr::tbl(getOption("RMDB"), dplyr::sql(query)), error = function(error){message(paste0(error))})
 }
 

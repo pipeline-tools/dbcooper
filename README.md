@@ -18,7 +18,7 @@ Additionally, there are three other important functions:
 
 - `reset_connection():` Sometimes your database connection will go stale. This will reset that connection
 - `rmdb_tbl():` Access a table in the database by name, using the format `rmdb_tbl("schema.table_name")`
-- `rmdb_query():` Send a SQL query directly to the database
+- `rmdb_query():` Send a SQL query directly to the database. Also accepts `.yml` files with a `query` parameter
 
 # Things to add
 
@@ -32,7 +32,3 @@ Additionally, there are three other important functions:
 ## Additional Renviron parameters
 - `rmdb_explicit_schemas`: Only create accessor functions for tables within a certain schema
 - `rmdb_exclude_schemas`: Create accessor functions for all schema except the ones listed
-
-## YAML support for `rmdb_query()`
-
-When handed a `.yml` file instead of SQL text, search the file for a `query` parameter and execute that query.
