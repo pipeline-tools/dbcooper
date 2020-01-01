@@ -44,6 +44,3 @@ Additionally, there are three other important functions:
 - SQLite
 - SQL Server
 - Oracle
-
-## Additional Renviron parameters
-- `rmdb_exclude_schemas`: Create accessor functions for all schema except the ones listed
