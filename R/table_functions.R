@@ -1,16 +1,28 @@
 #' List tables
 #' @import dplyr
 #' @importFrom DBI dbGetQuery
+#' @importFrom whisker whisker.render
 list_tables <- function(){
   message(paste0("Getting table names from ",
                  Sys.getenv("rmdb_driver"),
                  " database: ",
                  Sys.getenv("rmdb_name"), "..."))
+  
+  # Base Query, currently meant for postgres only
+  query <- "SELECT CONCAT(table_schema, '.', table_name) AS table_name_raw
+            FROM information_schema.tables
+            {{#rmdb_explicit_schemas}}
+            WHERE table_schema IN {{rmdb_explicit_schemas}}
+            {{/rmdb_explicit_schemas}}"
+  
+  # Environment vars
+  
+  rmdb_explicit_schemas <- if(nchar(Sys.getenv("rmdb_explicit_schemas")) > 0) {Sys.getenv("rmdb_explicit_schemas")}
+  rmdb_exclude_schemas <- if(nchar(Sys.getenv("rmdb_exclude_schemas")) > 0) {Sys.getenv("rmdb_exclude_schemas")}
+
   tables <- DBI::dbGetQuery(getOption("RMDB"),
-                            "SELECT CONCAT(table_schema, '.', table_name) AS table_name_raw
-                            FROM information_schema.tables
-                            WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
-                            ")
+                            whisker::whisker.render(query, data = list(rmdb_explicit_schemas=rmdb_explicit_schemas)))
+  
   if(nrow(tables) > 0){
     tables <- tables %>% pull()
   } else{
