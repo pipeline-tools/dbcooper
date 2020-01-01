@@ -3,16 +3,24 @@ For getting accessor functions for remote tables in R
 
 # How to use
 
-Edit your Renviron with `usethis::edit_r_environ()` and add the `rmdb_` parameters to connect to your database:
+## Necessary setup
 
-- `rmdb_driver:`Pick your database's driver *(for the time being, the only support is for "PostgreSQL")*
+**First:** edit your Renviron with `usethis::edit_r_environ()` and add the `rmdb_` parameters to connect to your database:
+
+- `rmdb_driver:`Pick your database's driver **(for the time being, the only support is for "PostgreSQL")**
 - `rmdb_name:` The name of the database
 - `rmdb_host:` The host location of the database
 - `rmdb_port:` Port of database (usuallt 5432 for PostgreSQL)
 - `rmdb_user:` Database user name
 - `rmdb_password:`Database user's password
 
-Once `remotedb` is loaded with `library(remotedb)`, the package will autocreate accessor functions that make each database table available to you as a remote `tbl`. Access functions follow the pattern `tbl_schema_table()`. 
+**Next:** install the package with `devtools::install_github("chriscardillo/remotedb")`
+
+**Last:** Load the package with `library(remotedb)`
+
+## Usage
+
+Once `remotedb` is loaded, the package will autocreate accessor functions that make each database table available to you as a remote `tbl`. Access functions follow the pattern `tbl_schema_table()`. 
 
 Additionally, there are three other important functions:
 
