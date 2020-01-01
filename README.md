@@ -18,7 +18,9 @@ For getting accessor functions for remote tables in R
   
 - **Optional**
 
-  - `rmdb_explicit_schemas:` Pass specific schemas whose tables will get accessor function. Format in .Renviron as `rmdb_explicit_schemas="('schema1', schema2')"`. This `('schema1', schema2')` is passed to a `WHERE` clause to determine the schemas, so make sure to follow formatting explicitly.
+  - `rmdb_explicit_schemas:` Pass specific schemas whose tables will get accessor function. Format in .Renviron as `rmdb_explicit_schemas="('schema1', schema2')"`. This `('schema1', schema2')` is passed to a `WHERE` clause to determine the schemas to include, so make sure to follow formatting explicitly.
+  - `rmdb_exclude_schemas`: Pass specific schemes whose tables will be excluded from having accessor functions. Format in .Renviron as `rmdb_exclude_schemas="('schema1', schema2')"`. This `('schema1', schema2')` is passed to a `WHERE` clause to determine the schemas to exclude, so make sure to follow formatting explicitly.
+  - **NOTE: if both an `rmdb_explicit_schemas` and an `rmdb_exclude_schemas` are defined in Renviron, `rmdb_explicit_schemas` will be prioritized.**
 
 **Next:** install the package with `devtools::install_github("chriscardillo/remotedb")`
 
