@@ -44,5 +44,4 @@ Additionally, there are three other important functions:
 - Oracle
 
 ## Additional Renviron parameters
-- `rmdb_explicit_schemas`: Only create accessor functions for tables within a certain schema
 - `rmdb_exclude_schemas`: Create accessor functions for all schema except the ones listed
