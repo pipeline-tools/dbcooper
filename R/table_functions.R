@@ -8,7 +8,7 @@ list_tables <- function(){
                  " database: ",
                  Sys.getenv("rmdb_name"), "..."))
   
-  # Base Query, currently meant for postgres only
+  # Base Query, currently meant for postgres and mysql only
   query <- "SELECT CONCAT(table_schema, '.', table_name) AS table_name_raw
             FROM information_schema.tables
             

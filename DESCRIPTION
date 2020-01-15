@@ -13,6 +13,7 @@ Depends:
 Imports:
   DBI,
   RPostgreSQL,
+  RMySQL,
   purrr,
   dbplyr,
   R6

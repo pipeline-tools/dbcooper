@@ -1,8 +1,10 @@
 #' Get Connection
 #' @importFrom DBI dbConnect
 #' @importFrom RPostgreSQL PostgreSQL
+#' @importFrom RMySQL MySQL
 get_con <- function(){
-  drivers <- list("PostgreSQL" = quote(RPostgreSQL::PostgreSQL()))
+  drivers <- list("PostgreSQL" = quote(RPostgreSQL::PostgreSQL()),
+                  "MySQL" = quote(RMySQL::MySQL()))
   driver <- drivers[[Sys.getenv("rmdb_driver")]]
   con <- DBI::dbConnect(eval(driver),
                         dbname=Sys.getenv("rmdb_name"),
