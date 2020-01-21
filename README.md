@@ -40,7 +40,6 @@ Additionally, there are three other important functions:
 
 ## Support for other database types
 
-- MySQL 
 - SQLite
 - SQL Server
 - Oracle
