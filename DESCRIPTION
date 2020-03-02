@@ -15,8 +15,7 @@ Imports:
     DBI,
     purrr,
     dbplyr
-Suggests:
-    Lahman
 RoxygenNote: 6.1.1
 Suggests: 
-    yaml
+    yaml,
+    Lahman
