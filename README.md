@@ -43,9 +43,9 @@ lahman_src
 #> src:  sqlite 3.30.1 [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmppWhBJ8/lahman.sqlite]
 #> tbls: AllstarFull, Appearances, AwardsManagers, AwardsPlayers,
 #>   AwardsShareManagers, AwardsSharePlayers, Batting, BattingPost,
-#>   CollegePlaying, Fielding, FieldingOF, FieldingPost,
-#>   HallOfFame, LahmanData, Managers, ManagersHalf, Master, Parks,
-#>   People, Pitching, PitchingPost, Salaries, Schools, SeriesPost,
+#>   CollegePlaying, Fielding, FieldingOF, FieldingPost, HallOfFame,
+#>   LahmanData, Managers, ManagersHalf, Master, Parks, People,
+#>   Pitching, PitchingPost, Salaries, Schools, SeriesPost,
 #>   sqlite_stat1, sqlite_stat4, Teams, TeamsFranchises, TeamsHalf
 ```
 
@@ -60,12 +60,13 @@ dbc_init(lahman_src, "lahman")
 
 ### Using database functions
 
-`dbc_init` adds four functions when it initializes a database source. In this case, each will start with the `lahman_` prefix.
+`dbc_init` adds several functions when it initializes a database source. In this case, each will start with the `lahman_` prefix.
 
 * `_list`: Get a list of tables
 * `_tbl`: Access a table that can be worked with in dbplyr
 * `_query`: Perform of a SQL query and work with the result
 * `_execute`: Execute a query (such as a `CREATE` or `DROP`)
+* `_src`: Retrieve a `dbi_src` for the database
 
 For instance, we could start by finding the names of the tables in the Lahman database.
 
@@ -97,21 +98,21 @@ lahman_tbl("Batting")
 #> # Source:   table<Batting> [?? x 22]
 #> # Database: sqlite 3.30.1
 #> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmppWhBJ8/lahman.sqlite]
-#>    playerID yearID stint teamID lgID      G    AB     R     H
-#>    <chr>     <int> <int> <chr>  <chr> <int> <int> <int> <int>
-#>  1 abercda…   1871     1 TRO    NA        1     4     0     0
-#>  2 addybo01   1871     1 RC1    NA       25   118    30    32
-#>  3 allisar…   1871     1 CL1    NA       29   137    28    40
-#>  4 allisdo…   1871     1 WS3    NA       27   133    28    44
-#>  5 ansonca…   1871     1 RC1    NA       25   120    29    39
-#>  6 armstbo…   1871     1 FW1    NA       12    49     9    11
-#>  7 barkeal…   1871     1 RC1    NA        1     4     0     1
-#>  8 barnero…   1871     1 BS1    NA       31   157    66    63
-#>  9 barrebi…   1871     1 FW1    NA        1     5     1     1
-#> 10 barrofr…   1871     1 BS1    NA       18    86    13    13
-#> # … with more rows, and 13 more variables: X2B <int>, X3B <int>,
-#> #   HR <int>, RBI <int>, SB <int>, CS <int>, BB <int>, SO <int>,
-#> #   IBB <int>, HBP <int>, SH <int>, SF <int>, GIDP <int>
+#>    playerID yearID stint teamID lgID      G    AB     R     H   X2B
+#>    <chr>     <int> <int> <chr>  <chr> <int> <int> <int> <int> <int>
+#>  1 abercda…   1871     1 TRO    NA        1     4     0     0     0
+#>  2 addybo01   1871     1 RC1    NA       25   118    30    32     6
+#>  3 allisar…   1871     1 CL1    NA       29   137    28    40     4
+#>  4 allisdo…   1871     1 WS3    NA       27   133    28    44    10
+#>  5 ansonca…   1871     1 RC1    NA       25   120    29    39    11
+#>  6 armstbo…   1871     1 FW1    NA       12    49     9    11     2
+#>  7 barkeal…   1871     1 RC1    NA        1     4     0     1     0
+#>  8 barnero…   1871     1 BS1    NA       31   157    66    63    10
+#>  9 barrebi…   1871     1 FW1    NA        1     5     1     1     1
+#> 10 barrofr…   1871     1 BS1    NA       18    86    13    13     2
+#> # … with more rows, and 12 more variables: X3B <int>, HR <int>,
+#> #   RBI <int>, SB <int>, CS <int>, BB <int>, SO <int>, IBB <int>,
+#> #   HBP <int>, SH <int>, SF <int>, GIDP <int>
 
 lahman_tbl("Batting") %>%
   count(teamID, sort = TRUE)
@@ -186,21 +187,21 @@ lahman_Batting()
 #> # Source:   table<Batting> [?? x 22]
 #> # Database: sqlite 3.30.1
 #> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmppWhBJ8/lahman.sqlite]
-#>    playerID yearID stint teamID lgID      G    AB     R     H
-#>    <chr>     <int> <int> <chr>  <chr> <int> <int> <int> <int>
-#>  1 abercda…   1871     1 TRO    NA        1     4     0     0
-#>  2 addybo01   1871     1 RC1    NA       25   118    30    32
-#>  3 allisar…   1871     1 CL1    NA       29   137    28    40
-#>  4 allisdo…   1871     1 WS3    NA       27   133    28    44
-#>  5 ansonca…   1871     1 RC1    NA       25   120    29    39
-#>  6 armstbo…   1871     1 FW1    NA       12    49     9    11
-#>  7 barkeal…   1871     1 RC1    NA        1     4     0     1
-#>  8 barnero…   1871     1 BS1    NA       31   157    66    63
-#>  9 barrebi…   1871     1 FW1    NA        1     5     1     1
-#> 10 barrofr…   1871     1 BS1    NA       18    86    13    13
-#> # … with more rows, and 13 more variables: X2B <int>, X3B <int>,
-#> #   HR <int>, RBI <int>, SB <int>, CS <int>, BB <int>, SO <int>,
-#> #   IBB <int>, HBP <int>, SH <int>, SF <int>, GIDP <int>
+#>    playerID yearID stint teamID lgID      G    AB     R     H   X2B
+#>    <chr>     <int> <int> <chr>  <chr> <int> <int> <int> <int> <int>
+#>  1 abercda…   1871     1 TRO    NA        1     4     0     0     0
+#>  2 addybo01   1871     1 RC1    NA       25   118    30    32     6
+#>  3 allisar…   1871     1 CL1    NA       29   137    28    40     4
+#>  4 allisdo…   1871     1 WS3    NA       27   133    28    44    10
+#>  5 ansonca…   1871     1 RC1    NA       25   120    29    39    11
+#>  6 armstbo…   1871     1 FW1    NA       12    49     9    11     2
+#>  7 barkeal…   1871     1 RC1    NA        1     4     0     1     0
+#>  8 barnero…   1871     1 BS1    NA       31   157    66    63    10
+#>  9 barrebi…   1871     1 FW1    NA        1     5     1     1     1
+#> 10 barrofr…   1871     1 BS1    NA       18    86    13    13     2
+#> # … with more rows, and 12 more variables: X3B <int>, HR <int>,
+#> #   RBI <int>, SB <int>, CS <int>, BB <int>, SO <int>, IBB <int>,
+#> #   HBP <int>, SH <int>, SF <int>, GIDP <int>
 
 # Same result as lahman_tbl("Master") %>% count()
 lahman_Master() %>%

@@ -58,12 +58,13 @@ dbc_init(lahman_src, "lahman")
 
 ### Using database functions
 
-`dbc_init` adds four functions when it initializes a database source. In this case, each will start with the `lahman_` prefix.
+`dbc_init` adds several functions when it initializes a database source. In this case, each will start with the `lahman_` prefix.
 
 * `_list`: Get a list of tables
 * `_tbl`: Access a table that can be worked with in dbplyr
 * `_query`: Perform of a SQL query and work with the result
 * `_execute`: Execute a query (such as a `CREATE` or `DROP`)
+* `_src`: Retrieve a `dbi_src` for the database
 
 For instance, we could start by finding the names of the tables in the Lahman database.
 
