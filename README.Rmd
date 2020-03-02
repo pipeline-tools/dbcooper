@@ -1,7 +1,3 @@
----
-output: github_document
----
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
@@ -9,7 +5,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  error = FALSE
 )
 ```
 
@@ -17,7 +14,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![Travis build status](https://travis-ci.org/chriscardillo/remotedb.svg?branch=master)](https://travis-ci.org/dgrtwo/dbcooper)
+[![Travis build status](https://travis-ci.org/dgrtwo/dbcooper.svg?branch=master)](https://travis-ci.org/dgrtwo/dbcooper)
 <!-- badges: end -->
 
 The dbcooper package turns a database connection into a collection of functions, handling logic for keeping track of connections and letting you take advantage of autocompletion when exploring a database.
