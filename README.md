@@ -1,45 +1,206 @@
-# remotedb
-For getting accessor functions for remote tables in R
+---
+output: github_document
+---
 
-# How to use
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## Necessary setup
 
-**First:** edit your Renviron with `usethis::edit_r_environ()` and add the `rmdb_` parameters to connect to your database:
 
-- **Required**
+# dbcooper
 
-  - `rmdb_driver:`Pick your database's driver **(for the time being, the only support is for "PostgreSQL")**
-  - `rmdb_name:` The name of the database
-  - `rmdb_host:` The host location of the database
-  - `rmdb_port:` Port of database (usuallt 5432 for PostgreSQL)
-  - `rmdb_user:` Database user name
-  - `rmdb_password:`Database user's password
-  
-- **Optional**
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+<!-- badges: end -->
 
-  - `rmdb_explicit_schemas:` Pass specific schemas whose tables will get accessor function. Format in .Renviron as `rmdb_explicit_schemas="('schema1', schema2')"`. This `('schema1', schema2')` is passed to a `WHERE` clause to determine the schemas to include, so make sure to follow formatting explicitly.
-  - `rmdb_exclude_schemas`: Pass specific schemes whose tables will be excluded from having accessor functions. Format in .Renviron as `rmdb_exclude_schemas="('schema1', schema2')"`. This `('schema1', schema2')` is passed to a `WHERE` clause to determine the schemas to exclude, so make sure to follow formatting explicitly.
-  - **NOTE: if both an `rmdb_explicit_schemas` and an `rmdb_exclude_schemas` are defined in Renviron, `rmdb_explicit_schemas` will be prioritized.**
+The dbcooper package turns a database connection into a collection of functions, handling logic for keeping track of connections and letting you take advantage of autocompletion when exploring a database.
 
-**Next:** install the package with `devtools::install_github("chriscardillo/remotedb")`
+It's especially helpful to use when authoring database-specific R packages, for instance in an internal company package or one wrapping a public data source.
 
-**Last:** Load the package with `library(remotedb)`
+## Installation
 
-## Usage
+You can install the development version from [GitHub](https://github.com/) with:
 
-Once `remotedb` is loaded, the package will autocreate accessor functions that make each database table available to you as a remote `tbl`. Access functions follow the pattern `tbl_schema_table()`. 
+``` r
+# install.packages("devtools")
+devtools::install_github("chriscardillo/dbcooper")
+```
 
-Additionally, there are three other important functions:
+## Example
 
-- `reset_connection():` Sometimes your database connection will go stale. This will reset that connection
-- `rmdb_tbl():` Access a table in the database by name, using the format `rmdb_tbl("schema.table_name")`
-- `rmdb_query():` Send a SQL query directly to the database. Also accepts `.yml` files with a `query` parameter
+### Initializing the functions
 
-# Things to add
+The dbcooper package asks you to create the connection first. As an example, we can use the Lahman baseball database packaged with dbplyr.
 
-## Support for other database types
 
-- SQLite
-- SQL Server
-- Oracle
+```r
+library(dplyr)
+
+lahman_src <- dbplyr::lahman_sqlite()
+lahman_src
+#> src:  sqlite 3.30.1 [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpI2EDGz/lahman.sqlite]
+#> tbls: AllstarFull, Appearances, AwardsManagers, AwardsPlayers,
+#>   AwardsShareManagers, AwardsSharePlayers, Batting, BattingPost,
+#>   CollegePlaying, Fielding, FieldingOF, FieldingPost, HallOfFame, LahmanData,
+#>   Managers, ManagersHalf, Master, Parks, People, Pitching, PitchingPost,
+#>   Salaries, Schools, SeriesPost, sqlite_stat1, sqlite_stat4, Teams,
+#>   TeamsFranchises, TeamsHalf
+```
+
+You set up dbcooper with the `dbc_init` function, passing it a prefix `lahman`.
+
+
+```r
+dbc_init(lahman_src, "lahman")
+```
+
+`dbc_init` then create database accessor functions in your global environment (though you can also pass it an environment to create them in).
+
+### Using database functions
+
+`dbc_init` adds four functions when it initializes a database source. In this case, each will start with the `lahman_` prefix.
+
+* `_list`: Get a list of tables
+* `_tbl`: Access a table that can be worked with in dbplyr
+* `_query`: Perform of a SQL query and work with the result
+* `_execute`: Execute a query (such as a `CREATE` or `DROP`)
+
+For instance, we could start by finding the names of the tables in the Lahman database.
+
+
+```r
+lahman_list()
+#>  [1] "AllstarFull"         "Appearances"         "AwardsManagers"     
+#>  [4] "AwardsPlayers"       "AwardsShareManagers" "AwardsSharePlayers" 
+#>  [7] "Batting"             "BattingPost"         "CollegePlaying"     
+#> [10] "Fielding"            "FieldingOF"          "FieldingPost"       
+#> [13] "HallOfFame"          "LahmanData"          "Managers"           
+#> [16] "ManagersHalf"        "Master"              "Parks"              
+#> [19] "People"              "Pitching"            "PitchingPost"       
+#> [22] "Salaries"            "Schools"             "SeriesPost"         
+#> [25] "Teams"               "TeamsFranchises"     "TeamsHalf"          
+#> [28] "sqlite_stat1"        "sqlite_stat4"
+```
+
+We can access one of these tables with `lahman_tbl()`, then put it through any kind of dplyr operation.
+
+
+```r
+lahman_tbl("Batting")
+#> # Source:   table<Batting> [?? x 22]
+#> # Database: sqlite 3.30.1
+#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpI2EDGz/lahman.sqlite]
+#>    playerID yearID stint teamID lgID      G    AB     R     H   X2B   X3B    HR
+#>    <chr>     <int> <int> <chr>  <chr> <int> <int> <int> <int> <int> <int> <int>
+#>  1 abercda…   1871     1 TRO    NA        1     4     0     0     0     0     0
+#>  2 addybo01   1871     1 RC1    NA       25   118    30    32     6     0     0
+#>  3 allisar…   1871     1 CL1    NA       29   137    28    40     4     5     0
+#>  4 allisdo…   1871     1 WS3    NA       27   133    28    44    10     2     2
+#>  5 ansonca…   1871     1 RC1    NA       25   120    29    39    11     3     0
+#>  6 armstbo…   1871     1 FW1    NA       12    49     9    11     2     1     0
+#>  7 barkeal…   1871     1 RC1    NA        1     4     0     1     0     0     0
+#>  8 barnero…   1871     1 BS1    NA       31   157    66    63    10     9     0
+#>  9 barrebi…   1871     1 FW1    NA        1     5     1     1     1     0     0
+#> 10 barrofr…   1871     1 BS1    NA       18    86    13    13     2     1     0
+#> # … with more rows, and 10 more variables: RBI <int>, SB <int>, CS <int>,
+#> #   BB <int>, SO <int>, IBB <int>, HBP <int>, SH <int>, SF <int>, GIDP <int>
+
+lahman_tbl("Batting") %>%
+  count(teamID, sort = TRUE)
+#> # Source:     lazy query [?? x 2]
+#> # Database:   sqlite 3.30.1
+#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpI2EDGz/lahman.sqlite]
+#> # Ordered by: desc(n)
+#>    teamID     n
+#>    <chr>  <int>
+#>  1 CHN     4961
+#>  2 PHI     4869
+#>  3 PIT     4817
+#>  4 SLN     4766
+#>  5 CIN     4641
+#>  6 CLE     4590
+#>  7 BOS     4421
+#>  8 CHA     4381
+#>  9 NYA     4374
+#> 10 DET     4315
+#> # … with more rows
+```
+
+If we'd rather write SQL in some case than write, we could also run `lahman_query()` (which can also take a filename).
+
+
+```r
+lahman_query("SELECT
+                playerID,
+                sum(AB) as AB
+              FROM Batting
+              GROUP BY playerID")
+#> # Source:   SQL [?? x 2]
+#> # Database: sqlite 3.30.1
+#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpI2EDGz/lahman.sqlite]
+#>    playerID     AB
+#>    <chr>     <int>
+#>  1 aardsda01     4
+#>  2 aaronha01 12364
+#>  3 aaronto01   944
+#>  4 aasedo01      5
+#>  5 abadan01     21
+#>  6 abadfe01      9
+#>  7 abadijo01    49
+#>  8 abbated01  3044
+#>  9 abbeybe01   225
+#> 10 abbeych01  1756
+#> # … with more rows
+```
+
+Finally, `lahman_execute()` is for commands like `CREATE` and `DROP` that don't return a table, but that .
+
+
+```r
+lahman_execute("CREATE TABLE Players AS
+                  SELECT playerID, SUM(AB) AS AB
+                  FROM Batting
+                  GROUP BY playerID")
+#> [1] 0
+
+lahman_execute("DROP TABLE Players")
+#> [1] 0
+```
+
+### Autocompleted tables
+
+Besides the `_list`, `_tbl`, `_query`, and `_execute` functions, the package also creates auto
+
+
+```r
+# Same result as lahman_tbl("Batting")
+lahman_Batting()
+#> # Source:   table<Batting> [?? x 22]
+#> # Database: sqlite 3.30.1
+#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpI2EDGz/lahman.sqlite]
+#>    playerID yearID stint teamID lgID      G    AB     R     H   X2B   X3B    HR
+#>    <chr>     <int> <int> <chr>  <chr> <int> <int> <int> <int> <int> <int> <int>
+#>  1 abercda…   1871     1 TRO    NA        1     4     0     0     0     0     0
+#>  2 addybo01   1871     1 RC1    NA       25   118    30    32     6     0     0
+#>  3 allisar…   1871     1 CL1    NA       29   137    28    40     4     5     0
+#>  4 allisdo…   1871     1 WS3    NA       27   133    28    44    10     2     2
+#>  5 ansonca…   1871     1 RC1    NA       25   120    29    39    11     3     0
+#>  6 armstbo…   1871     1 FW1    NA       12    49     9    11     2     1     0
+#>  7 barkeal…   1871     1 RC1    NA        1     4     0     1     0     0     0
+#>  8 barnero…   1871     1 BS1    NA       31   157    66    63    10     9     0
+#>  9 barrebi…   1871     1 FW1    NA        1     5     1     1     1     0     0
+#> 10 barrofr…   1871     1 BS1    NA       18    86    13    13     2     1     0
+#> # … with more rows, and 10 more variables: RBI <int>, SB <int>, CS <int>,
+#> #   BB <int>, SO <int>, IBB <int>, HBP <int>, SH <int>, SF <int>, GIDP <int>
+
+# Same result as lahman_tbl("Master") %>% count()
+lahman_Master() %>%
+  count()
+#> # Source:   lazy query [?? x 1]
+#> # Database: sqlite 3.30.1
+#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpI2EDGz/lahman.sqlite]
+#>       n
+#>   <int>
+#> 1 19617
+```
+
+These are useful because they let you use autocomplete to complete table names as you're exploring a data source.

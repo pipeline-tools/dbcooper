@@ -1,108 +1,68 @@
-#' List tables
-#' @import dplyr
-#' @importFrom DBI dbGetQuery
-#' @importFrom whisker whisker.render
-list_tables <- function(){
-  message(paste0("Getting table names from ",
-                 Sys.getenv("rmdb_driver"),
-                 " database: ",
-                 Sys.getenv("rmdb_name"), "..."))
-  
-  # Base Query, currently meant for postgres and mysql only
-  query <- "SELECT CONCAT(table_schema, '.', table_name) AS table_name_raw
-            FROM information_schema.tables
-            
-            {{#rmdb_explicit_schemas}}{{^rmdb_exclude_schemas}}
-                WHERE table_schema IN {{rmdb_explicit_schemas}}
-            {{/rmdb_exclude_schemas}}{{/rmdb_explicit_schemas}}
-  
-            {{#rmdb_exclude_schemas}}{{^rmdb_explicit_schemas}}
-                WHERE table_schema NOT IN {{rmdb_exclude_schemas}}
-            {{/rmdb_explicit_schemas}}{{/rmdb_exclude_schemas}}
-
-            {{#rmdb_explicit_schemas}}{{#rmdb_exclude_schemas}}
-                WHERE table_schema IN {{rmdb_explicit_schemas}}
-            {{/rmdb_exclude_schemas}}{{/rmdb_explicit_schemas}}"
-  
-  # Environment vars
-  
-  rmdb_explicit_schemas <- if(nchar(Sys.getenv("rmdb_explicit_schemas")) > 0) {Sys.getenv("rmdb_explicit_schemas")}
-  rmdb_exclude_schemas <- if(nchar(Sys.getenv("rmdb_exclude_schemas")) > 0) {Sys.getenv("rmdb_exclude_schemas")}
-
-  tables <- DBI::dbGetQuery(getOption("RMDB"),
-                            whisker::whisker.render(query, data = list(rmdb_explicit_schemas=rmdb_explicit_schemas,
-                                                                       rmdb_exclude_schemas=rmdb_exclude_schemas)))
-  
-  if(nrow(tables) > 0){
-    tables <- tables %>% pull()
-  } else{
-    tables <- NULL
-    message("...no tables found.")
-  }
-  return(tables)
-}
+## First, utilities to access a table from a connection ID.
 
 #' Access a single table
-#' @importFrom dplyr tbl
-#' @importFrom dbplyr in_schema
-access_table <- function(table_name, con = getOption('RMDB')){
+#' 
+#' @param table_name Name of the table in the database. If no table is
+#' provided, returns a list of tables as a character vector.
+#' @template con-id
+dbc_table <- function(table_name = NULL, con_id) {
+  con <- dbc_get_connection(con_id)
+  
+  if (is.null(table_name)) {
+    return(dbc_list_tables(con))
+  }
+  
   if(!grepl("\\.", table_name)){
-    tryCatch(dplyr::tbl(con, table_name), error = function(error){message(paste0(error))})
-  } else if(grepl("\\.", table_name) && !grepl("^\\.", table_name)){
-    table_split <- unlist(strsplit(table_name, "[.]"))
+    dplyr::tbl(con, table_name)
+  } else if (grepl(".\\.", table_name)) {
+    table_split <- strsplit(table_name, "\\.")[[1]]
     schema <- table_split[1]
     table <- table_split[2]
-    tryCatch(dplyr::tbl(con, dbplyr::in_schema(schema, table)), error = function(error){message(paste0(error))})
+    dplyr::tbl(con, dbplyr::in_schema(schema, table))
   } else if(grepl("^\\.", table_name)){
     table <- paste0("public", gsub("^\\.", "_", table_name))
-    tryCatch(dplyr::tbl(con, table_name), error = function(error){message(paste0(error))})
+    dplyr::tbl(con, table)
   }
 }
 
-#' Access a table by name
-#' @param table_name a table name to send to the database
-#' @export
-rmdb_tbl <- function(table_name){
-  access_table(table_name)
-}
-
-#' Query the database
-#' @param query query for database
-#' @importFrom dplyr tbl sql
-#' @importFrom yaml read_yaml
-#' @export
-rmdb_query <- function(query){
-  if(grepl("*.yml$", query)){
+#' Given a string, turn it into a SQL query
+#' 
+#' Internal function to pull a query from a string. If the string is in a
+#' YAML or plain text file, read it
+#' 
+#' @param query A string or filename
+query_from_str <- function(query) {
+  if (grepl("*.yml$", query)) {
     yaml <- yaml::read_yaml(query)
-    if("query" %in% names(yaml)){
-      query <- yaml[["query"]]
+    
+    if("sql" %in% names(yaml)) {
+      query <- yaml[["sql"]]
     } else {
-      stop(paste0("No parameter 'query' found in file ", query))
+      stop(paste0("No parameter 'sql' found in file ", query))
     }
+  } else if (file.exists(query)) {
+    # Query is in a file; read it
+    query <- paste(readLines(query), collapse = "\n")
   }
-  tryCatch(dplyr::tbl(getOption("RMDB"), dplyr::sql(query)), error = function(error){message(paste0(error))})
+  query
 }
 
-#' Create table function
-create_table_function <-function(table_name, env){
-  fun <- eval(parse(text = paste0("function(){access_table('", table_name, "')}")))
-  attr(fun, 'table') <- table_name
-  if(grepl("[.]", table_name)){
-    clean_name <- gsub("[.]", "_", table_name)
-  } else {
-    clean_name <- table_name
-  }
-
-  function_name <- paste0("tbl_", clean_name)
-  assign(function_name, fun, pos = env)
-
+#' Run a query on a SQL database and get a remote table back
+#' 
+#' @param query Either a SQL query as a string, a file containing a SQL
+#' query, or a YAML file with a \code{sql} parameter.
+#' @template con-id
+#' 
+#' @return A \code{tbl_sql} with the remote results
+dbc_query <- function(query, con_id) {
+  dplyr::tbl(dbc_get_connection(con_id), dplyr::sql(query_from_str(query)))
 }
 
-#' Get table functions
-#' @importFrom purrr map
-#' @exportPattern ^tbl_.*$
-get_table_functions <- function(env){
-  tables <- list_tables()
-  invisible(purrr::map(tables, create_table_function, env = env))
+#' Execute a query on a SQL database
+#' 
+#' @param query Either a SQL query as a string, a file containing a SQL
+#' query, or a YAML file with a \code{sql} parameter.
+#' @template con-id
+dbc_execute <- function(query, con_id) {
+  DBI::dbExecute(dbc_get_connection(con_id), query)
 }
-

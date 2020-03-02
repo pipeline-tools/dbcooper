@@ -1,0 +1,114 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# dbcooper
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+<!-- badges: end -->
+
+The dbcooper package turns a database connection into a collection of functions, handling logic for keeping track of connections and letting you take advantage of autocompletion when exploring a database.
+
+It's especially helpful to use when authoring database-specific R packages, for instance in an internal company package or one wrapping a public data source.
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("chriscardillo/dbcooper")
+```
+
+## Example
+
+### Initializing the functions
+
+The dbcooper package asks you to create the connection first. As an example, we can use the Lahman baseball database packaged with dbplyr.
+
+```{r message = FALSE}
+library(dplyr)
+
+lahman_src <- dbplyr::lahman_sqlite()
+lahman_src
+```
+
+You set up dbcooper with the `dbc_init` function, passing it a prefix `lahman`.
+
+```{r}
+dbc_init(lahman_src, "lahman")
+```
+
+`dbc_init` then create database accessor functions in your global environment (though you can also pass it an environment to create them in).
+
+### Using database functions
+
+`dbc_init` adds four functions when it initializes a database source. In this case, each will start with the `lahman_` prefix.
+
+* `_list`: Get a list of tables
+* `_tbl`: Access a table that can be worked with in dbplyr
+* `_query`: Perform of a SQL query and work with the result
+* `_execute`: Execute a query (such as a `CREATE` or `DROP`)
+
+For instance, we could start by finding the names of the tables in the Lahman database.
+
+```{r}
+lahman_list()
+```
+
+We can access one of these tables with `lahman_tbl()`, then put it through any kind of dplyr operation.
+
+```{r}
+lahman_tbl("Batting")
+
+lahman_tbl("Batting") %>%
+  count(teamID, sort = TRUE)
+```
+
+If we'd rather write SQL in some case than write, we could also run `lahman_query()` (which can also take a filename).
+
+```{r}
+lahman_query("SELECT
+                playerID,
+                sum(AB) as AB
+              FROM Batting
+              GROUP BY playerID")
+```
+
+Finally, `lahman_execute()` is for commands like `CREATE` and `DROP` that don't return a table, but that .
+
+```{r}
+lahman_execute("CREATE TABLE Players AS
+                  SELECT playerID, SUM(AB) AS AB
+                  FROM Batting
+                  GROUP BY playerID")
+
+lahman_execute("DROP TABLE Players")
+```
+
+### Autocompleted tables
+
+Besides the `_list`, `_tbl`, `_query`, and `_execute` functions, the package also creates auto
+
+```{r}
+# Same result as lahman_tbl("Batting")
+lahman_Batting()
+
+# Same result as lahman_tbl("Master") %>% count()
+lahman_Master() %>%
+  count()
+```
+
+These are useful because they let you use autocomplete to complete table names as you're exploring a data source.
