@@ -17,11 +17,14 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![Travis build status](https://travis-ci.org/chriscardillo/remotedb.svg?branch=master)](https://travis-ci.org/dgrtwo/dbcooper)
 <!-- badges: end -->
 
 The dbcooper package turns a database connection into a collection of functions, handling logic for keeping track of connections and letting you take advantage of autocompletion when exploring a database.
 
 It's especially helpful to use when authoring database-specific R packages, for instance in an internal company package or one wrapping a public data source.
+
+The package's name is a reference to the bandit [D.B. Cooper](https://en.wikipedia.org/wiki/D._B._Cooper).
 
 ## Installation
 
@@ -29,14 +32,14 @@ You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("chriscardillo/dbcooper")
+devtools::install_github("dgrtwo/dbcooper")
 ```
 
 ## Example
 
 ### Initializing the functions
 
-The dbcooper package asks you to create the connection first. As an example, we can use the Lahman baseball database packaged with dbplyr.
+The dbcooper package asks you to create the connection first. As an example, we'll use the Lahman baseball database packaged with dbplyr.
 
 ```{r message = FALSE}
 library(dplyr)
@@ -45,13 +48,13 @@ lahman_src <- dbplyr::lahman_sqlite()
 lahman_src
 ```
 
-You set up dbcooper with the `dbc_init` function, passing it a prefix `lahman`.
+You set up dbcooper with the `dbc_init` function, passing it a prefix `lahman` that will apply to all the functions it creates.
 
 ```{r}
 dbc_init(lahman_src, "lahman")
 ```
 
-`dbc_init` then create database accessor functions in your global environment (though you can also pass it an environment to create them in).
+`dbc_init` then creates user-friendly accessor functions in your global environment. (You could also pass it an environment in which the functions will be created).
 
 ### Using database functions
 
@@ -112,3 +115,10 @@ lahman_Master() %>%
 ```
 
 These are useful because they let you use autocomplete to complete table names as you're exploring a data source.
+
+## Code of Conduct
+
+Please note that the 'dbcooper' project is released with a
+[Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+By contributing to this project, you agree to abide by its terms.
+

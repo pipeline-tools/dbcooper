@@ -33,6 +33,10 @@ dbc_table <- function(table_name = NULL, con_id) {
 #' @param query A string or filename
 query_from_str <- function(query) {
   if (grepl("*.yml$", query)) {
+    if (!requireNamespace("yaml", quietly = TRUE)) {
+      stop("Reading a yml file requires the yaml package to be installed")
+    }
+    
     yaml <- yaml::read_yaml(query)
     
     if("sql" %in% names(yaml)) {

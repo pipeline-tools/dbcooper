@@ -5,7 +5,7 @@
 #' @param option_name Name
 #' @param value Value
 set_option <- function(option_name, value) {
-  args <- setNames(list(value), option_name)
+  args <- stats::setNames(list(value), option_name)
   do.call(options, args)
 }
 
