@@ -15,7 +15,7 @@ Imports:
     DBI,
     purrr,
     dbplyr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests: 
     yaml,
     Lahman,

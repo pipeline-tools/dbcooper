@@ -6,11 +6,20 @@
 \alias{dbc_init.src_sql}
 \title{Create functions for accessing a remote database}
 \usage{
-dbc_init(con, con_id, env = parent.frame())
+dbc_init(con, con_id, env = parent.frame(), ...)
 
-\method{dbc_init}{default}(con, con_id, env = parent.frame())
+\method{dbc_init}{default}(
+  con,
+  con_id,
+  env = parent.frame(),
+  tables = NULL,
+  table_prefix = NULL,
+  table_formatter = NULL,
+  table_post = NULL,
+  ...
+)
 
-\method{dbc_init}{src_sql}(con, con_id, env = parent.frame())
+\method{dbc_init}{src_sql}(con, con_id, env = parent.frame(), ...)
 }
 \arguments{
 \item{con}{A DBI-compliant database connection object, or a
@@ -23,6 +32,19 @@ connection globally.}
 
 \item{env}{Environment in which to create the table accessors, such
 as the global environment or a package namespace.}
+
+\item{tables}{Optionally, a vector of tables. Useful if dbcooper's
+table listing functions don't work for a database, or if you want to
+use only a subset of tables.}
+
+\item{table_prefix}{Optionally, a prefix to append to each table,
+usually a schema.}
+
+\item{table_post}{Post-processing to perform on each table before
+returning it}
+
+\item{table_format}{Optionally, a function to clean the table name
+before turning it into a function name, such as removing prefixes}
 }
 \description{
 Create and assign functions that make accessing a database easy.
@@ -42,7 +64,7 @@ dbc_init(src, "lahman")
 ## Tables
 
 # Access each table using autocompleted functions
-lahman_Batting()
+lahman_batting()
 
 # Can also pass the name of a table as a string to lahman_tbl
 lahman_tbl("Pitching")

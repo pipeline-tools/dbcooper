@@ -21,17 +21,25 @@ set_option <- function(option_name, value) {
 #' contain database metadata.
 #' 
 #' @importFrom dplyr %>%
-dbc_list_tables <- function(con,
-                            exclude_schemas = c("information_schema", "pg_catalog")) {
-  if (!inherits(con, "PqConnection")) {
-    tables <- DBI::dbListTables(con)
-    
-    # Remove ones that match the regex
-    exclude_regex <- paste0(exclude_schemas, "\\.", collapse = "|")
-    tables <- tables[!grepl(exclude_regex, tables)]
-    return(tables)
-  }
+dbc_list_tables <- function(con, exclude_schemas) {
+  UseMethod("dbc_list_tables")
+}
+
+#' @rdname dbc_list_tables
+#' @export
+dbc_list_tables.default <- function(con,
+                                    exclude_schemas = c("information_schema", "pg_catalog")) {
+  tables <- DBI::dbListTables(con)
   
+  # Remove ones that match the regex
+  exclude_regex <- paste0(exclude_schemas, "\\.", collapse = "|")
+  tables <- tables[!grepl(exclude_regex, tables)]
+  return(tables)
+}
+
+#' @rdname dbc_list_tables
+#' @export
+dbc_list_tables.PqConnection <- function(con, exclude_schemas = c("information_schema", "pg_catalog")) {
   # Base Query, currently meant for postgres and mysql only
   query <- "SELECT CONCAT(table_schema, '.', table_name) AS table_name_raw, table_schema
             FROM information_schema.tables"
@@ -42,4 +50,19 @@ dbc_list_tables <- function(con,
     dplyr::pull()
   
   return(tables)
+}
+
+#' @rdname dbc_list_tables
+#' @export
+dbc_list_tables.Snowflake <- function(con,
+                                      exclude_schemas = c("INFORMATION_SCHEMA")) {
+  tables <- DBI::dbGetQuery(con, "SHOW TABLES") %>%
+    dplyr::select(database_name, schema_name, name)
+  
+  views <- DBI::dbGetQuery(con, "SHOW VIEWS") %>%
+    dplyr::select(database_name, schema_name, name)
+  
+  dplyr::bind_rows(tables, views) %>%
+    dplyr::filter(!schema_name %in% exclude_schemas) %>%
+    with(paste(database_name, schema_name, name, sep = "."))
 }
