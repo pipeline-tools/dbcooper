@@ -111,7 +111,7 @@ dbc_init.default <- function(con, con_id, env = parent.frame(),
   list_fun <- function(query) { dbc_list_tables(dbc_get_connection(con_id)) }
   assign(paste0(con_id, "_list"), list_fun, pos = env)
   
-  query_fun <- function(query) { dbc_query(query, con_id) }
+  query_fun <- function(query) { table_post(dbc_query(query, con_id)) }
   assign(paste0(con_id, "_query"), query_fun, pos = env)
   
   tbl_fun <- function(table_name = NULL) { table_post(dbc_table(paste0(table_prefix, table_name), con_id)) }
