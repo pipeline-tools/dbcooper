@@ -48,8 +48,8 @@ query_from_str <- function(query) {
       stop(paste0("No parameter 'sql' found in file ", query))
     }
   } else if (file.exists(query)) {
-    # Query is in a file; read it
-    query <- paste(readLines(query), collapse = "\n")
+    # Query is in a file; read it; remove frontmatter
+    query <- gsub("^---\n.*---\n", "", paste(readLines(query), collapse = "\n"))
   }
   query
 }
