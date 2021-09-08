@@ -41,14 +41,15 @@ The dbcooper package asks you to create the connection first. As an example, we'
 ```{r message = FALSE}
 library(dplyr)
 
-lahman_src <- dbplyr::lahman_sqlite()
-lahman_src
+lahman_db <- dbplyr::lahman_sqlite()
+lahman_db
 ```
 
 You set up dbcooper with the `dbc_init` function, passing it a prefix `lahman` that will apply to all the functions it creates.
 
 ```{r}
-dbc_init(lahman_src, "lahman")
+library(dbcooper)
+dbc_init(lahman_db, "lahman")
 ```
 
 `dbc_init` then creates user-friendly accessor functions in your global environment. (You could also pass it an environment in which the functions will be created).
@@ -78,7 +79,7 @@ lahman_tbl("Batting") %>%
   count(teamID, sort = TRUE)
 ```
 
-If we'd rather write SQL in some case than write, we could also run `lahman_query()` (which can also take a filename).
+If we'd rather write SQL than dplyr, we could also run `lahman_query()` (which can also take a filename).
 
 ```{r}
 lahman_query("SELECT
@@ -88,7 +89,7 @@ lahman_query("SELECT
               GROUP BY playerID")
 ```
 
-Finally, `lahman_execute()` is for commands like `CREATE` and `DROP` that don't return a table, but that .
+Finally, `lahman_execute()` is for commands like `CREATE` and `DROP` that don't return a table, but rather execute a command on the database.
 
 ```{r}
 lahman_execute("CREATE TABLE Players AS
@@ -101,18 +102,53 @@ lahman_execute("DROP TABLE Players")
 
 ### Autocompleted tables
 
-Besides the `_list`, `_tbl`, `_query`, and `_execute` functions, the package also creates auto
+Besides the `_list`, `_tbl`, `_query`, and `_execute` functions, the package also creates auto-completed table accessors.
 
 ```{r}
 # Same result as lahman_tbl("Batting")
-lahman_Batting()
+lahman_batting()
 
 # Same result as lahman_tbl("Master") %>% count()
-lahman_Master() %>%
+lahman_master() %>%
   count()
 ```
 
-These are useful because they let you use autocomplete to complete table names as you're exploring a data source.
+These are useful because they let you use auto-complete to complete table names as you're exploring a data source.
+
+### Examples: BigQuery
+
+```{r}
+dbc_bigquery("hn", "hacker_news")
+
+hn_list()
+```
+
+```{r}
+library(ggplot2)
+
+hn_stories() %>%
+  count(date = DATE_TRUNC(DATE(creation_date), MONTH)) %>%
+  ggplot(aes(month, n)) +
+  geom_col() +
+  labs(y = "# of Hacker News stories")
+```
+
+```{r}
+dbc_bigquery("stack", "stackoverflow")
+
+stack_posts_questions() %>%
+  count(date = DATE_TRUNC(DATE(creation_date), WEEK)) %>%
+  ggplot(aes(date, n)) +
+  geom_col()
+```
+
+```{r}
+dbc_bigquery("sec", "sec_quarterly_financials")
+
+sec_submission() %>%
+  count(company_name, sort = TRUE)
+```
+
 
 ## Code of Conduct
 

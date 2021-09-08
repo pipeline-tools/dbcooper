@@ -14,8 +14,9 @@ Imports:
     dplyr,
     DBI,
     purrr,
-    dbplyr
-RoxygenNote: 7.0.2
+    dbplyr,
+    snakecase
+RoxygenNote: 7.1.1
 Suggests: 
     yaml,
     Lahman,

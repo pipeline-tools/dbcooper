@@ -8,8 +8,8 @@ assign_table_function(
   table_name,
   con_id,
   env = parent.frame(),
-  table_formatter = NULL,
-  table_post = NULL
+  table_formatter = snakecase::to_snake_case,
+  table_post = identity
 )
 }
 \arguments{
@@ -20,11 +20,11 @@ assign_table_function(
 \item{env}{Environment in which to create the table accessors, such
 as the global environment or a package namespace.}
 
+\item{table_formatter}{Optionally, a function to clean the table name
+before turning it into a function name, such as removing prefixes}
+
 \item{table_post}{Post-processing to perform on each table before
 returning it}
-
-\item{table_format}{Optionally, a function to clean the table name
-before turning it into a function name, such as removing prefixes}
 }
 \description{
 Create one table function
