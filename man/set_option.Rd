@@ -12,5 +12,5 @@ set_option(option_name, value)
 \item{value}{Value}
 }
 \description{
-This is a bit difficult to do with the options() function
+Utility. This is a bit difficult to do with the options() function.
 }

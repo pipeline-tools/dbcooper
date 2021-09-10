@@ -6,7 +6,7 @@
 #' @template con-id
 #' @param env Environment in which to create the table accessors, such
 #' as the global environment or a package namespace.
-#' @param table_format Optionally, a function to clean the table name
+#' @param table_formatter Optionally, a function to clean the table name
 #' before turning it into a function name, such as removing prefixes 
 #' @param table_post Post-processing to perform on each table before
 #' returning it
@@ -15,19 +15,15 @@
 assign_table_function <- function(table_name,
                                   con_id,
                                   env = parent.frame(),
-                                  table_formatter = NULL,
-                                  table_post = NULL) {
-  table_formatter <- table_formatter %||% identity
-  table_post <- table_post %||% identity
-  
+                                  table_formatter = snakecase::to_snake_case,
+                                  table_post = identity) {
   # Create the function
   fun <- function() table_post(dbc_table(table_name, con_id))
   attr(fun, 'connection') <- con_id
   attr(fun, 'table') <- table_name
   
   clean_name <- table_formatter(table_name)
-  clean_name <- tolower(gsub("\\.", "_", clean_name))
-  
+
   function_name <- paste0(con_id, "_", clean_name)
   assign(function_name, fun, pos = env)
 }
@@ -52,10 +48,12 @@ assign_table_function <- function(table_name,
 #' use only a subset of tables.
 #' @param table_prefix Optionally, a prefix to append to each table,
 #' usually a schema.
-#' @param table_format Optionally, a function to clean the table name
-#' before turning it into a function name, such as removing prefixes 
-#' @param table_post Post-processing to perform on each table before
-#' returning it
+#' @param table_formatter Optionally, a function to clean the table name
+#' before turning it into a function name, such as removing prefixes.
+#' By default, \code{\link[snakecase]{to_snake_case}}.
+#' @param table_post Optionally, post-processing to perform on each table before
+#' returning it.
+#' @param ... Arguments passed on to \code{dbc_init.default}.
 #' 
 #' @examples 
 #' 
@@ -96,17 +94,17 @@ dbc_init <- function(con, con_id, env = parent.frame(), ...) {
 
 #' @rdname dbc_init
 #' @export
-dbc_init.default <- function(con, con_id, env = parent.frame(),
+dbc_init.default <- function(con,
+                             con_id,
+                             env = parent.frame(),
                              tables = NULL,
                              table_prefix = NULL,
-                             table_formatter = NULL,
-                             table_post = NULL,
+                             table_formatter = snakecase::to_snake_case,
+                             table_post = identity,
                              ...) {
   # Assign the connection/pool globally so it can be accessed later
   dbc_add_connection(con, con_id)
 
-  table_post <- table_post %||% identity
-  
   # Create functions for querying and getting a single table
   list_fun <- function(query) { dbc_list_tables(dbc_get_connection(con_id)) }
   assign(paste0(con_id, "_list"), list_fun, pos = env)
@@ -128,7 +126,10 @@ dbc_init.default <- function(con, con_id, env = parent.frame(),
     tables <- dbc_list_tables(con)
   }
 
-  invisible(purrr::map(tables, assign_table_function, con_id, env = env,
+  invisible(purrr::map(tables,
+                       assign_table_function,
+                       con_id,
+                       env = env,
                        table_formatter = table_formatter,
                        table_post = table_post))
 }

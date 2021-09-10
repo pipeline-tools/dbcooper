@@ -1,6 +1,21 @@
+#' Require a parameter by name
+#' 
+#' Throws an error if the parameter is not set.
+#' 
+#' @param param_name Parameter to look up with \code{\link[base]{Sys.getenv}}.
+#' 
+#' @export
+dbc_param <- function(param_name) {
+  ret <- Sys.getenv(param_name)
+  if (!nzchar(ret)) {
+    stop("You must set ", param_name, " in your .Renviron (then restart R)")
+  }
+  ret
+}
+
 #' Set an option by name
 #' 
-#' This is a bit difficult to do with the options() function
+#' Utility. This is a bit difficult to do with the options() function.
 #' 
 #' @param option_name Name
 #' @param value Value
