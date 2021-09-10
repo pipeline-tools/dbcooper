@@ -97,6 +97,8 @@ lahman_execute("CREATE TABLE Players AS
                   FROM Batting
                   GROUP BY playerID")
 
+lahman_tbl("Players")
+
 lahman_execute("DROP TABLE Players")
 ```
 
@@ -114,41 +116,6 @@ lahman_master() %>%
 ```
 
 These are useful because they let you use auto-complete to complete table names as you're exploring a data source.
-
-### Examples: BigQuery
-
-```{r}
-dbc_bigquery("hn", "hacker_news")
-
-hn_list()
-```
-
-```{r}
-library(ggplot2)
-
-hn_stories() %>%
-  count(date = DATE_TRUNC(DATE(creation_date), MONTH)) %>%
-  ggplot(aes(month, n)) +
-  geom_col() +
-  labs(y = "# of Hacker News stories")
-```
-
-```{r}
-dbc_bigquery("stack", "stackoverflow")
-
-stack_posts_questions() %>%
-  count(date = DATE_TRUNC(DATE(creation_date), WEEK)) %>%
-  ggplot(aes(date, n)) +
-  geom_col()
-```
-
-```{r}
-dbc_bigquery("sec", "sec_quarterly_financials")
-
-sec_submission() %>%
-  count(company_name, sort = TRUE)
-```
-
 
 ## Code of Conduct
 
