@@ -5,6 +5,7 @@
 \alias{dbc_list_tables.default}
 \alias{dbc_list_tables.PqConnection}
 \alias{dbc_list_tables.Snowflake}
+\alias{dbc_list_tables.SnowflakeDBConnection}
 \title{List tables in a database}
 \usage{
 dbc_list_tables(con, exclude_schemas)
@@ -14,6 +15,8 @@ dbc_list_tables(con, exclude_schemas)
 \method{dbc_list_tables}{PqConnection}(con, exclude_schemas = c("information_schema", "pg_catalog"))
 
 \method{dbc_list_tables}{Snowflake}(con, exclude_schemas = c("INFORMATION_SCHEMA"))
+
+\method{dbc_list_tables}{SnowflakeDBConnection}(con, exclude_schemas = c("INFORMATION_SCHEMA"))
 }
 \arguments{
 \item{con}{A connection or pool object}

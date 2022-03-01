@@ -81,3 +81,11 @@ dbc_list_tables.Snowflake <- function(con,
     dplyr::filter(!schema_name %in% exclude_schemas) %>%
     with(paste(database_name, schema_name, name, sep = "."))
 }
+
+#' @rdname dbc_list_tables
+#' @export
+dbc_list_tables.SnowflakeDBConnection <- function(con,
+                                                  exclude_schemas = c("INFORMATION_SCHEMA")) {
+  # The dplyr.snowflakedb package
+  dbc_list_tables.Snowflake(con, exclude_schemas)
+}
