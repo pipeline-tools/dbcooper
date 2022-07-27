@@ -15,6 +15,10 @@ It's especially helpful to use when authoring database-specific R packages, for 
 
 The package's name is a reference to the bandit [D.B. Cooper](https://en.wikipedia.org/wiki/D._B._Cooper).
 
+* For the Python version of the package, see [machow/dbcooper-py](https://github.com/machow/dbcooper-py).
+* For an example of a database package created with dbcooper, see [stackbigquery](https://github.com/dgrtwo/stackbigquery/)
+* For some slides about the package, see [here](http://varianceexplained.org/files/dbcooper-rstudio-conf-2022.pdf)
+
 ## Installation
 
 You can install the development version from [GitHub](https://github.com/) with:
@@ -37,7 +41,7 @@ library(dplyr)
 lahman_db <- dbplyr::lahman_sqlite()
 lahman_db
 #> <SQLiteConnection>
-#>   Path: /private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpyQc96f/lahman.sqlite
+#>   Path: /private/var/folders/wp/6jpw10dj1b13vw5n9bvf1dvc0000gn/T/RtmpuEyzKR/lahman.sqlite
 #>   Extensions: TRUE
 ```
 
@@ -66,14 +70,17 @@ For instance, we could start by finding the names of the tables in the Lahman da
 
 ```r
 lahman_list()
-#>  [1] "AllstarFull"         "Appearances"         "AwardsManagers"      "AwardsPlayers"      
-#>  [5] "AwardsShareManagers" "AwardsSharePlayers"  "Batting"             "BattingPost"        
-#>  [9] "CollegePlaying"      "Fielding"            "FieldingOF"          "FieldingOFsplit"    
-#> [13] "FieldingPost"        "HallOfFame"          "HomeGames"           "LahmanData"         
-#> [17] "Managers"            "ManagersHalf"        "Master"              "Parks"              
-#> [21] "People"              "Pitching"            "PitchingPost"        "Salaries"           
-#> [25] "Schools"             "SeriesPost"          "Teams"               "TeamsFranchises"    
-#> [29] "TeamsHalf"           "sqlite_stat1"        "sqlite_stat4"
+#>  [1] "AllstarFull"         "Appearances"         "AwardsManagers"     
+#>  [4] "AwardsPlayers"       "AwardsShareManagers" "AwardsSharePlayers" 
+#>  [7] "Batting"             "BattingPost"         "CollegePlaying"     
+#> [10] "Fielding"            "FieldingOF"          "FieldingOFsplit"    
+#> [13] "FieldingPost"        "HallOfFame"          "HomeGames"          
+#> [16] "LahmanData"          "Managers"            "ManagersHalf"       
+#> [19] "Master"              "Parks"               "People"             
+#> [22] "Pitching"            "PitchingPost"        "Salaries"           
+#> [25] "Schools"             "SeriesPost"          "Teams"              
+#> [28] "TeamsFranchises"     "TeamsHalf"           "sqlite_stat1"       
+#> [31] "sqlite_stat4"
 ```
 
 We can access one of these tables with `lahman_tbl()`, then put it through any kind of dplyr operation.
@@ -82,28 +89,30 @@ We can access one of these tables with `lahman_tbl()`, then put it through any k
 ```r
 lahman_tbl("Batting")
 #> # Source:   SQL [?? x 22]
-#> # Database: sqlite 3.36.0
-#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpyQc96f/lahman.sqlite]
-#>    playerID  yearID stint teamID lgID      G    AB     R     H   X2B   X3B    HR   RBI    SB    CS
-#>    <chr>      <int> <int> <chr>  <chr> <int> <int> <int> <int> <int> <int> <int> <int> <int> <int>
-#>  1 abercda01   1871     1 TRO    NA        1     4     0     0     0     0     0     0     0     0
-#>  2 addybo01    1871     1 RC1    NA       25   118    30    32     6     0     0    13     8     1
-#>  3 allisar01   1871     1 CL1    NA       29   137    28    40     4     5     0    19     3     1
-#>  4 allisdo01   1871     1 WS3    NA       27   133    28    44    10     2     2    27     1     1
-#>  5 ansonca01   1871     1 RC1    NA       25   120    29    39    11     3     0    16     6     2
-#>  6 armstbo01   1871     1 FW1    NA       12    49     9    11     2     1     0     5     0     1
-#>  7 barkeal01   1871     1 RC1    NA        1     4     0     1     0     0     0     2     0     0
-#>  8 barnero01   1871     1 BS1    NA       31   157    66    63    10     9     0    34    11     6
-#>  9 barrebi01   1871     1 FW1    NA        1     5     1     1     1     0     0     1     0     0
-#> 10 barrofr01   1871     1 BS1    NA       18    86    13    13     2     1     0    11     1     0
-#> # … with more rows, and 7 more variables: BB <int>, SO <int>, IBB <int>, HBP <int>, SH <int>,
-#> #   SF <int>, GIDP <int>
+#> # Database: sqlite 3.34.1
+#> #   [/private/var/folders/wp/6jpw10dj1b13vw5n9bvf1dvc0000gn/T/RtmpuEyzKR/lahman.sqlite]
+#>    playerID  yearID stint teamID lgID      G    AB     R     H   X2B
+#>    <chr>      <int> <int> <chr>  <chr> <int> <int> <int> <int> <int>
+#>  1 abercda01   1871     1 TRO    NA        1     4     0     0     0
+#>  2 addybo01    1871     1 RC1    NA       25   118    30    32     6
+#>  3 allisar01   1871     1 CL1    NA       29   137    28    40     4
+#>  4 allisdo01   1871     1 WS3    NA       27   133    28    44    10
+#>  5 ansonca01   1871     1 RC1    NA       25   120    29    39    11
+#>  6 armstbo01   1871     1 FW1    NA       12    49     9    11     2
+#>  7 barkeal01   1871     1 RC1    NA        1     4     0     1     0
+#>  8 barnero01   1871     1 BS1    NA       31   157    66    63    10
+#>  9 barrebi01   1871     1 FW1    NA        1     5     1     1     1
+#> 10 barrofr01   1871     1 BS1    NA       18    86    13    13     2
+#> # … with more rows, and 12 more variables: X3B <int>, HR <int>,
+#> #   RBI <int>, SB <int>, CS <int>, BB <int>, SO <int>, IBB <int>,
+#> #   HBP <int>, SH <int>, SF <int>, GIDP <int>
+#> # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
 
 lahman_tbl("Batting") %>%
   count(teamID, sort = TRUE)
 #> # Source:     lazy query [?? x 2]
-#> # Database:   sqlite 3.36.0
-#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpyQc96f/lahman.sqlite]
+#> # Database:   sqlite 3.34.1
+#> #   [/private/var/folders/wp/6jpw10dj1b13vw5n9bvf1dvc0000gn/T/RtmpuEyzKR/lahman.sqlite]
 #> # Ordered by: desc(n)
 #>    teamID     n
 #>    <chr>  <int>
@@ -118,6 +127,7 @@ lahman_tbl("Batting") %>%
 #>  9 NYA     4471
 #> 10 DET     4413
 #> # … with more rows
+#> # ℹ Use `print(n = ...)` to see more rows
 ```
 
 If we'd rather write SQL than dplyr, we could also run `lahman_query()` (which can also take a filename).
@@ -130,8 +140,8 @@ lahman_query("SELECT
               FROM Batting
               GROUP BY playerID")
 #> # Source:   SQL [?? x 2]
-#> # Database: sqlite 3.36.0
-#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpyQc96f/lahman.sqlite]
+#> # Database: sqlite 3.34.1
+#> #   [/private/var/folders/wp/6jpw10dj1b13vw5n9bvf1dvc0000gn/T/RtmpuEyzKR/lahman.sqlite]
 #>    playerID     AB
 #>    <chr>     <int>
 #>  1 aardsda01     4
@@ -145,6 +155,7 @@ lahman_query("SELECT
 #>  9 abbeybe01   225
 #> 10 abbeych01  1756
 #> # … with more rows
+#> # ℹ Use `print(n = ...)` to see more rows
 ```
 
 Finally, `lahman_execute()` is for commands like `CREATE` and `DROP` that don't return a table, but rather execute a command on the database.
@@ -159,8 +170,8 @@ lahman_execute("CREATE TABLE Players AS
 
 lahman_tbl("Players")
 #> # Source:   SQL [?? x 2]
-#> # Database: sqlite 3.36.0
-#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpyQc96f/lahman.sqlite]
+#> # Database: sqlite 3.34.1
+#> #   [/private/var/folders/wp/6jpw10dj1b13vw5n9bvf1dvc0000gn/T/RtmpuEyzKR/lahman.sqlite]
 #>    playerID     AB
 #>    <chr>     <int>
 #>  1 aardsda01     4
@@ -174,6 +185,7 @@ lahman_tbl("Players")
 #>  9 abbeybe01   225
 #> 10 abbeych01  1756
 #> # … with more rows
+#> # ℹ Use `print(n = ...)` to see more rows
 
 lahman_execute("DROP TABLE Players")
 #> [1] 0
@@ -188,29 +200,31 @@ Besides the `_list`, `_tbl`, `_query`, and `_execute` functions, the package als
 # Same result as lahman_tbl("Batting")
 lahman_batting()
 #> # Source:   SQL [?? x 22]
-#> # Database: sqlite 3.36.0
-#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpyQc96f/lahman.sqlite]
-#>    playerID  yearID stint teamID lgID      G    AB     R     H   X2B   X3B    HR   RBI    SB    CS
-#>    <chr>      <int> <int> <chr>  <chr> <int> <int> <int> <int> <int> <int> <int> <int> <int> <int>
-#>  1 abercda01   1871     1 TRO    NA        1     4     0     0     0     0     0     0     0     0
-#>  2 addybo01    1871     1 RC1    NA       25   118    30    32     6     0     0    13     8     1
-#>  3 allisar01   1871     1 CL1    NA       29   137    28    40     4     5     0    19     3     1
-#>  4 allisdo01   1871     1 WS3    NA       27   133    28    44    10     2     2    27     1     1
-#>  5 ansonca01   1871     1 RC1    NA       25   120    29    39    11     3     0    16     6     2
-#>  6 armstbo01   1871     1 FW1    NA       12    49     9    11     2     1     0     5     0     1
-#>  7 barkeal01   1871     1 RC1    NA        1     4     0     1     0     0     0     2     0     0
-#>  8 barnero01   1871     1 BS1    NA       31   157    66    63    10     9     0    34    11     6
-#>  9 barrebi01   1871     1 FW1    NA        1     5     1     1     1     0     0     1     0     0
-#> 10 barrofr01   1871     1 BS1    NA       18    86    13    13     2     1     0    11     1     0
-#> # … with more rows, and 7 more variables: BB <int>, SO <int>, IBB <int>, HBP <int>, SH <int>,
-#> #   SF <int>, GIDP <int>
+#> # Database: sqlite 3.34.1
+#> #   [/private/var/folders/wp/6jpw10dj1b13vw5n9bvf1dvc0000gn/T/RtmpuEyzKR/lahman.sqlite]
+#>    playerID  yearID stint teamID lgID      G    AB     R     H   X2B
+#>    <chr>      <int> <int> <chr>  <chr> <int> <int> <int> <int> <int>
+#>  1 abercda01   1871     1 TRO    NA        1     4     0     0     0
+#>  2 addybo01    1871     1 RC1    NA       25   118    30    32     6
+#>  3 allisar01   1871     1 CL1    NA       29   137    28    40     4
+#>  4 allisdo01   1871     1 WS3    NA       27   133    28    44    10
+#>  5 ansonca01   1871     1 RC1    NA       25   120    29    39    11
+#>  6 armstbo01   1871     1 FW1    NA       12    49     9    11     2
+#>  7 barkeal01   1871     1 RC1    NA        1     4     0     1     0
+#>  8 barnero01   1871     1 BS1    NA       31   157    66    63    10
+#>  9 barrebi01   1871     1 FW1    NA        1     5     1     1     1
+#> 10 barrofr01   1871     1 BS1    NA       18    86    13    13     2
+#> # … with more rows, and 12 more variables: X3B <int>, HR <int>,
+#> #   RBI <int>, SB <int>, CS <int>, BB <int>, SO <int>, IBB <int>,
+#> #   HBP <int>, SH <int>, SF <int>, GIDP <int>
+#> # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
 
 # Same result as lahman_tbl("Master") %>% count()
 lahman_master() %>%
   count()
 #> # Source:   lazy query [?? x 1]
-#> # Database: sqlite 3.36.0
-#> #   [/private/var/folders/8p/xzrrqphx2qb3d2s_fgqrk5xr0000gn/T/RtmpyQc96f/lahman.sqlite]
+#> # Database: sqlite 3.34.1
+#> #   [/private/var/folders/wp/6jpw10dj1b13vw5n9bvf1dvc0000gn/T/RtmpuEyzKR/lahman.sqlite]
 #>       n
 #>   <int>
 #> 1 20093
