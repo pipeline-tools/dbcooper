@@ -114,8 +114,8 @@ Besides the `_list`, `_tbl`, `_query`, and `_execute` functions, the package als
 # Same result as lahman_tbl("Batting")
 lahman_batting()
 
-# Same result as lahman_tbl("Master") %>% count()
-lahman_master() %>%
+# Same result as lahman_tbl("Manager") %>% count()
+lahman_manager() %>%
   count()
 ```
 
@@ -126,4 +126,3 @@ These are useful because they let you use auto-complete to complete table names 
 Please note that the 'dbcooper' project is released with a
 [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
 By contributing to this project, you agree to abide by its terms.
-
