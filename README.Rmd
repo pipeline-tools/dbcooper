@@ -115,7 +115,7 @@ Besides the `_list`, `_tbl`, `_query`, and `_execute` functions, the package als
 lahman_batting()
 
 # Same result as lahman_tbl("Managers") %>% count()
-lahman_manager() %>%
+lahman_managers() %>%
   count()
 ```
 
