@@ -114,7 +114,7 @@ Besides the `_list`, `_tbl`, `_query`, and `_execute` functions, the package als
 # Same result as lahman_tbl("Batting")
 lahman_batting()
 
-# Same result as lahman_tbl("Manager") %>% count()
+# Same result as lahman_tbl("Managers") %>% count()
 lahman_manager() %>%
   count()
 ```
