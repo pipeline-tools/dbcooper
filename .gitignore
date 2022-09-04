@@ -40,3 +40,5 @@ vignettes/*.pdf
 .Rproj.user
 # *.Rproj
 .Rbuildignore
+.Rdata
+.DS_Store
