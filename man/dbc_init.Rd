@@ -76,7 +76,7 @@ lahman_tbl("Pitching")
 lahman_list()
 
 # Run a SQL query
-lahman_query("SELECT COUNT(*) FROM Master")
+lahman_query("SELECT COUNT(*) FROM Managers")
 
 # Execute queries that change the database
 lahman_execute("CREATE TABLE Players AS
