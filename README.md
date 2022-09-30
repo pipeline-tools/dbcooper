@@ -5,6 +5,7 @@
 # dbcooper
 
 <!-- badges: start -->
+![R-CMD-check](https://github.com/chriscardillo/dbcooper/workflows/R-CMD-check/badge.svg)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
