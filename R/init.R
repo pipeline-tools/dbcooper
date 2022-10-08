@@ -11,7 +11,6 @@
 #' @param table_post Post-processing to perform on each table before
 #' returning it
 #'
-#' @importFrom purrr %||%
 #' @importFrom snakecase to_snake_case
 assign_table_function <- function(table_name,
                                   con_id,

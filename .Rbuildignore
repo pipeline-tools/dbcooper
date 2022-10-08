@@ -4,3 +4,4 @@
 ^CODE_OF_CONDUCT.md
 man-roxygen/*
 .travis.yml
+.github
