@@ -5,7 +5,7 @@ Authors@R: c(
     person("Chris", "Cardillo", email = "cfcardillo23@gmail.com", role = c("cre", "aut")),
     person("David", "Robinson", email = "admiral.david@gmail.com", role = "aut"), 
     person("Ramnath", "Vaidyanathan", role = "ctb"))
-Maintainer: Chris Cardillo <cfcardillo23@gmail>
+Maintainer: Chris Cardillo <cfcardillo23@gmail.com>
 Description: Create accessor functions for each table in a database,
     making it easy to work with them using the 'dbplyr' package.
 License: MIT + file LICENSE
