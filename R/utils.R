@@ -71,10 +71,10 @@ dbc_list_tables.PqConnection <- function(con, exclude_schemas = c("information_s
 #' @export
 dbc_list_tables.Snowflake <- function(con,
                                       exclude_schemas = c("INFORMATION_SCHEMA")) {
-  tables <- DBI::dbGetQuery(con, "SHOW TABLES") %>%
+  tables <- DBI::dbGetQuery(con, "SHOW TERSE TABLES") %>%
     dplyr::select(database_name, schema_name, name)
   
-  views <- DBI::dbGetQuery(con, "SHOW VIEWS") %>%
+  views <- DBI::dbGetQuery(con, "SHOW TERSE VIEWS") %>%
     dplyr::select(database_name, schema_name, name)
   
   dplyr::bind_rows(tables, views) %>%
