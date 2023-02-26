@@ -51,7 +51,7 @@ query_from_str <- function(query) {
     # Query is in a file; read it; remove frontmatter
     query <- gsub("^---\n.*---\n", "", paste(readLines(query), collapse = "\n"))
   }
-  query
+  paste("(", query, ")")
 }
 
 #' Run a query on a SQL database and get a remote table back
