@@ -15,7 +15,7 @@ It's especially helpful to use when authoring database-specific R packages, for 
 The package's name is a reference to the bandit [D.B. Cooper](https://en.wikipedia.org/wiki/D._B._Cooper).
 
 * For the Python version of the package, see [machow/dbcooper-py](https://github.com/machow/dbcooper-py).
-* For an example of a database package created with dbcooper, see [stackbigquery](https://github.com/dgrtwo/stackbigquery/)
+* For an example of database packages created with dbcooper, see [stackbigquery](https://github.com/dgrtwo/stackbigquery/) or [lahmancooper](https://github.com/chriscardillo/lahmancooper)
 * For some slides about the package, see [here](http://varianceexplained.org/files/dbcooper-rstudio-conf-2022.pdf)
 
 ## Installation
