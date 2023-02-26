@@ -89,3 +89,11 @@ dbc_list_tables.SnowflakeDBConnection <- function(con,
   # The dplyr.snowflakedb package
   dbc_list_tables.Snowflake(con, exclude_schemas)
 }
+
+
+#' @rdname dbc_list_tables
+#' @export
+dbc_list_tables.duckdb_connection <- function(con,
+                                              exclude_schemas = c("INFORMATION_SCHEMA")) {
+  dplyr::pull(DBI::dbGetQuery(con, "SELECT table_schema || '.' || table_name AS table_name FROM information_schema.tables"), "table_name")
+}

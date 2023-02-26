@@ -13,7 +13,7 @@ dbc_table <- function(table_name = NULL, con_id) {
   }
   
   # Try using a select instead of in_schema
-  return(dplyr::tbl(con, dbplyr::sql(paste("SELECT * FROM ", table_name))))
+  return(dplyr::tbl(con, dbplyr::sql(paste("( SELECT * FROM", table_name, ")"))))
   
   if(!grepl("\\.", table_name)){
     dplyr::tbl(con, table_name)
@@ -51,7 +51,7 @@ query_from_str <- function(query) {
     # Query is in a file; read it; remove frontmatter
     query <- gsub("^---\n.*---\n", "", paste(readLines(query), collapse = "\n"))
   }
-  query
+  paste("(", query, ")")
 }
 
 #' Run a query on a SQL database and get a remote table back
