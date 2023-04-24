@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 # dbcooper
 
 <!-- badges: start -->
-![R-CMD-check](https://github.com/chriscardillo/dbcooper/workflows/R-CMD-check/badge.svg)
+![R-CMD-check](https://github.com/pipeline-tools/dbcooper/workflows/R-CMD-check/badge.svg)
 <!-- badges: end -->
 
 The dbcooper package turns a database connection into a collection of functions, handling logic for keeping track of connections and letting you take advantage of autocompletion when exploring a database.
@@ -23,7 +23,7 @@ It's especially helpful to use when authoring database-specific R packages, for 
 The package's name is a reference to the bandit [D.B. Cooper](https://en.wikipedia.org/wiki/D._B._Cooper).
 
 * For the Python version of the package, see [machow/dbcooper-py](https://github.com/machow/dbcooper-py).
-* For an example of database packages created with dbcooper, see [stackbigquery](https://github.com/dgrtwo/stackbigquery/) or [lahmancooper](https://github.com/chriscardillo/lahmancooper)
+* For an example of database packages created with dbcooper, see [stackbigquery](https://github.com/dgrtwo/stackbigquery/) or [lahmancooper](https://github.com/pipeline-tools/lahmancooper)
 * For some slides about the package, see [here](http://varianceexplained.org/files/dbcooper-rstudio-conf-2022.pdf)
 
 ## Installation
@@ -32,7 +32,7 @@ You can install the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("chriscardillo/dbcooper")
+devtools::install_github("pipeline-tools/dbcooper")
 ```
 
 ## Example
@@ -123,5 +123,5 @@ These are useful because they let you use auto-complete to complete table names 
 ## Code of Conduct
 
 Please note that the 'dbcooper' project is released with a
-[Contributor Code of Conduct](https://github.com/chriscardillo/dbcooper/blob/main/CODE_OF_CONDUCT.md).
+[Contributor Code of Conduct](https://github.com/pipeline-tools/dbcooper/blob/main/CODE_OF_CONDUCT.md).
 By contributing to this project, you agree to abide by its terms.
