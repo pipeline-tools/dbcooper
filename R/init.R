@@ -101,6 +101,7 @@ dbc_init.default <- function(con,
                              table_prefix = NULL,
                              table_formatter = snakecase::to_snake_case,
                              table_post = identity,
+                             assign_table_functions = TRUE,
                              ...) {
   # Assign the connection/pool globally so it can be accessed later
   dbc_add_connection(con, con_id)
@@ -121,17 +122,20 @@ dbc_init.default <- function(con,
   src_fun <- function() { dbplyr::src_dbi(dbc_get_connection(con_id)) }
   assign(paste0(con_id, "_src"), src_fun, pos = env)
 
-  # Create functions for each individual table
-  if (is.null(tables)) {
-    tables <- dbc_list_tables(con)
+  if (assign_table_functions) {
+    
+    # Create functions for each individual table
+    if (is.null(tables)) {
+      tables <- dbc_list_tables(con)
+    }
+  
+    invisible(purrr::map(tables,
+                         assign_table_function,
+                         con_id,
+                         env = env,
+                         table_formatter = table_formatter,
+                         table_post = table_post))
   }
-
-  invisible(purrr::map(tables,
-                       assign_table_function,
-                       con_id,
-                       env = env,
-                       table_formatter = table_formatter,
-                       table_post = table_post))
 }
 
 #' @rdname dbc_init
